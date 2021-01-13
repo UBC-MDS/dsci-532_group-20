@@ -1,0 +1,1 @@
+This folder stores charts and tables. 
