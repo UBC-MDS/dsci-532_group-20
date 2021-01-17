@@ -10,7 +10,7 @@ Better customer understanding and good customer service can improve internal eff
 
 # 2. Description of the data
 
-The data set we used in building the dashboard comes from the *Hotel Booking demand datasets* from Antonio, Almeida and Nunes at Instituto Universit�rio de Lisboa (ISCTE-IUL), Lisbon, Portugal (Antonio, Almeida, and Nunes 2019). The data can be found from the GitHub Repository [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-02-11). 
+The data set we used in building the dashboard comes from the *Hotel Booking demand datasets* from Antonio, Almeida and Nunes at Instituto Universitario de Lisboa (ISCTE-IUL), Lisbon, Portugal (Antonio, Almeida, and Nunes 2019). The data can be found from the GitHub Repository [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-02-11). 
 
 The data is compased of two smaller datasets each containing reservation data from Super-Hotels in Portugal. One set from hotel in a city and one from a resort hotel. Each row in the dataset is an individual hotel reservation that occured in  between July 1st, 2015 and August 31st, 2017. There are a total of 119,390 booking details with 31 features. 40,060 observations from the resort hotel and 79,330 observations from the city hotel are included in this dataset.
 
