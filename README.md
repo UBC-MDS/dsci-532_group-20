@@ -4,5 +4,4 @@ This app generates a plot of any two of the variables in the hotel reservation d
 
 A slider will allow users to control the date range of the data displayed. A tile will display how many entries are displayed in the selected date range. Radio buttons will allow users to select between city hotels, resort hotels, or both types.
 
-![app_mockup.png](img/app_mockup.png)
-
+![app_mockup.png](results/img/app_mockup.png)
