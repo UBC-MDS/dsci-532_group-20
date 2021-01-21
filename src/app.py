@@ -29,7 +29,7 @@ def plot_histograms(x_col):
     return histo.to_html()
 
 app = dash.Dash(__name__)
-
+server = app.server # this is for deployment
 app.layout = html.Div([
     html.H1('Super-Hotels-Happy-Manager-Info'),
     html.P('by Sakshi Jain, Trevor Kinsey, Cameron Harris, Chen Zhao'), 
