@@ -18,7 +18,11 @@ data = hotel_trim.columns.tolist()
 
 app = dash.Dash(__name__)
 
+server = app.server # this is for deployment
+
+
 ## Setup app layout and front-end ##
+
 app.layout = html.Div([
     html.H1('Super-Hotels-Happy-Manager-Info'),
     html.P('by Sakshi Jain, Trevor Kinsey, Cameron Harris, Chen Zhao'), 
