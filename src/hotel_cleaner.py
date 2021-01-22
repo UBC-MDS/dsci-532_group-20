@@ -36,7 +36,7 @@ hotels.head()
 # change column names
 hotels.columns = ['Hotel type', 'Canceled', 'Lead time (days)', 'Arrival year',
        'Arrival month', 'Arrival week',
-       'Arrival date', 'Weekend nights',
+       'Arrival day', 'Weekend nights',
        'Week nights', 'Adults', 'Children', 'Babies', 'Meal type',
        'Country of origin', 'Market segment', 'Distribution channel',
        'Repeated guest', 'Previous cancellations',
@@ -46,4 +46,10 @@ hotels.columns = ['Hotel type', 'Canceled', 'Lead time (days)', 'Arrival year',
        'Required parking spaces', 'Special requests',
        'Reservation status', 'Reservation status date', 'Arrival date']
 
-hotels.to_csv("data/processed/clean_hotels.csv")
+# # create date index column for date slider
+# hotels["arrival_date_index"] = pd.to_numeric(hotels["Arrival date"])/60/60/24/10**9
+# start_date = hotels["arrival_date_index"][0]
+# hotels["arrival_date_index"] -= start_date
+
+#  save to file
+hotels.to_csv("data/processed/clean_hotels.csv", index = False)
