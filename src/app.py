@@ -69,11 +69,12 @@ info_area = dbc.Container(
                             max=53,
                             value=[1, 53],
                             marks={
-                                1: "1",
-                                14: "14",
-                                27: "27",
-                                40: "40",
-                                53: "53",
+                                1: "",
+                                9: "Spring",
+                                22: "Summer",
+                                35: "Fall",
+                                48: "Winter",
+                                53: "",
                             },
                         ),
                         html.Br(),
@@ -131,7 +132,8 @@ info_area = dbc.Container(
                 ),
             ]
         ),
-    ]
+    ],
+    style={"max-width": "55%"},
 )
 
 app.layout = html.Div([jumbotron, html.Br(), info_area])
@@ -154,7 +156,7 @@ def plot_altair(hotel_type, x_col, y_col):
             alt.X("Arrival week", title="Week numbers", axis=alt.Axis(grid=False)),
             alt.Y(y_col, title=y_col, scale=alt.Scale(zero=False)),
         )
-        .properties(width=700, height=370)
+        .properties(width=820, height=390)
         .configure_axis(labelFontSize=13, titleFontSize=17)
         .configure_title(fontSize=23)
     )
@@ -177,7 +179,7 @@ def histogram_1(hotel_type, weeks):
             alt.Y("counts", title="Guests numbers"),
             alt.Tooltip("Country of origin"),
         )
-        .properties(width=300, height=200)
+        .properties(width=390, height=200)
         .configure_axis(labelFontSize=10, titleFontSize=15)
         .configure_title(fontSize=19)
     )
@@ -205,7 +207,7 @@ def histogram_2(hotel_type, weeks):
             alt.Y("Percent of Guests", title="Percent of guests"),
             alt.Tooltip("Percent of Guests"),
         )
-        .properties(width=300, height=200)
+        .properties(width=390, height=200)
         .configure_axis(labelFontSize=10, titleFontSize=15)
         .configure_title(fontSize=19)
     )
