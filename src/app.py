@@ -21,7 +21,7 @@ columns = ["Reservations", "Average daily rate per person", 'Adults',
 'Children','Babies', 'Required parking spaces', 'Booking changes', 'Special requests']
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
-server = app.server
+server = app.server #to deploy the app. 
 
 # Setup app layout and front-end
 jumbotron = dbc.Jumbotron(
