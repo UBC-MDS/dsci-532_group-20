@@ -1,8 +1,12 @@
 pandas
 gunicorn
-altair
+altair==4.1.0
+altair-data-server==0.4.1
+altair-saver==0.5.0
+altair-viewer==0.3.0
 dash==1.18.1
 dash_bootstrap_components
 plotly==4.14.3
 numpy
-altair_saver
+
+
