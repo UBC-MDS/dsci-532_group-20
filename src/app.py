@@ -4,12 +4,12 @@ import numpy as np
 
 # Visualization packages
 import altair as alt
-from altair_saver import save
+# from altair_saver import save
 
-# Save a vega-lite spec and a PNG blob for each plot in the notebook
-alt.renderers.enable("mimetype")
-# Handle large data sets without embedding them in the notebook
-alt.data_transformers.enable("data_server")
+# # Save a vega-lite spec and a PNG blob for each plot in the notebook
+# alt.renderers.enable("mimetype")
+# # Handle large data sets without embedding them in the notebook
+# alt.data_transformers.enable("data_server")
 # Dashboard packages
 import dash
 import dash_core_components as dcc
