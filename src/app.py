@@ -24,6 +24,7 @@ from data_wrangling import main_plot, left_plot, right_plot
 columns = ["Guest Numbers", "Average daily rate per person", "Required parking spaces"]
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+server = app.server #to deploy the app. 
 
 # Setup app layout and front-end
 jumbotron = dbc.Jumbotron(
