@@ -5,12 +5,6 @@ import numpy as np
 # Visualization packages
 import altair as alt
 
-# from altair_saver import save
-
-# # Save a vega-lite spec and a PNG blob for each plot in the notebook
-# alt.renderers.enable("mimetype")
-# # Handle large data sets without embedding them in the notebook
-# alt.data_transformers.enable("data_server")
 # Dashboard packages
 import dash
 import dash_core_components as dcc
@@ -22,9 +16,20 @@ from dash.dependencies import Input, Output
 from data_wrangling import main_plot, left_plot, right_plot
 
 # Assign column names to a list for dropdown widget
-columns = ["Guest Numbers", "Average daily rate per person", "Required parking spaces"]
+# columns = ["Reservations", "Average daily rate per person", "Required parking spaces", 'Adults']
+columns = [
+    "Reservations",
+    "Average daily rate per person",
+    "Adults",
+    "Children",
+    "Babies",
+    "Required parking spaces",
+    "Booking changes",
+    "Special requests",
+]
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+server = app.server  # to deploy the app.
 
 # Setup app layout and front-end
 jumbotron = dbc.Jumbotron(
@@ -48,7 +53,23 @@ info_area = dbc.Container(
             [
                 dbc.Col(
                     [
-                        html.H4("Select Hotel Types"),
+                        html.Br(),
+                        html.Br(),
+                        html.H4("Select Feature for Main Plot"),
+                        html.Br(),
+                        dcc.Dropdown(
+                            id="y-axis-dropdown",
+                            options=[
+                                {"label": label, "value": label} for label in columns
+                            ],
+                            value=columns[0],
+                            multi=False,
+                            searchable=False,
+                            clearable=False,
+                        ),
+                        html.Br(),
+                        html.Br(),
+                        html.H4("Select Hotel Type"),
                         html.Br(),
                         dcc.RadioItems(
                             id="hotel-type-selection",
@@ -77,20 +98,6 @@ info_area = dbc.Container(
                                 48: "Winter",
                                 53: "",
                             },
-                        ),
-                        html.Br(),
-                        html.Br(),
-                        html.H4("Select Features for Main Plot"),
-                        html.Br(),
-                        dcc.Dropdown(
-                            id="y-axis-dropdown",
-                            options=[
-                                {"label": label, "value": label} for label in columns
-                            ],
-                            value=columns[0],
-                            multi=False,
-                            searchable=False,
-                            clearable=False,
                         ),
                     ],
                     md=3,
@@ -134,7 +141,7 @@ info_area = dbc.Container(
             ]
         ),
     ],
-    style={"max-width": "55%"},
+    style={"max-width": "75%"},
 )
 
 app.layout = html.Div([jumbotron, html.Br(), info_area])
@@ -148,7 +155,7 @@ app.layout = html.Div([jumbotron, html.Br(), info_area])
 )
 # Function to plot the main plot using selected hotel type and y variables
 def plot_altair(hotel_type, x_col, y_col):
-    df = main_plot(hotel_type, x_col)
+    df = main_plot(hotel_type, x_col, y_col)
     title_text = y_col + " for each week in the year"
     chart = (
         alt.Chart(df, title=title_text)
@@ -157,7 +164,7 @@ def plot_altair(hotel_type, x_col, y_col):
             alt.X("Arrival week", title="Week numbers", axis=alt.Axis(grid=False)),
             alt.Y(y_col, title=y_col, scale=alt.Scale(zero=False)),
         )
-        .properties(width=820, height=390)
+        .properties(width=700, height=390)
         .configure_axis(labelFontSize=13, titleFontSize=17)
         .configure_title(fontSize=23)
     )
@@ -177,10 +184,10 @@ def histogram_1(hotel_type, weeks):
         .mark_bar(color="orange")
         .encode(
             alt.X("Country of origin", sort="-y", title="Countries"),
-            alt.Y("counts", title="Guests numbers"),
+            alt.Y("counts", title="Reservations"),
             alt.Tooltip("Country of origin"),
         )
-        .properties(width=390, height=200)
+        .properties(width=300, height=200)
         .configure_axis(labelFontSize=10, titleFontSize=15)
         .configure_title(fontSize=19)
     )
@@ -205,10 +212,10 @@ def histogram_2(hotel_type, weeks):
                 scale=alt.Scale(domain=(0, 15)),
                 bin=alt.Bin(maxbins=75),
             ),
-            alt.Y("Percent of Guests", title="Percent of guests"),
-            alt.Tooltip("Percent of Guests"),
+            alt.Y("Percent of Reservations", title="Percent of Reservations"),
+            alt.Tooltip("Percent of Reservations"),
         )
-        .properties(width=390, height=200)
+        .properties(width=300, height=200)
         .configure_axis(labelFontSize=10, titleFontSize=15)
         .configure_title(fontSize=19)
     )
