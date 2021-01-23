@@ -4,6 +4,6 @@ altair
 dash==1.18.1
 dash_bootstrap_components
 plotly==4.14.3
-vega_datasets
 numpy
 altair_saver
+data_wrangling
