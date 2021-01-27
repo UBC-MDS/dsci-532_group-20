@@ -14,15 +14,16 @@ import pandas as pd
 # import the data
 hotels = pd.read_csv("data/raw/hotels.csv")
 
-# create `arrival_date` column from other columns
+# create new columns from other columns
 months = ["January", "February", "March", "April",
           "May", "June", "July", "August", "September", 
           "October", "November", "December"]
-hotels["month"] = hotels["arrival_date_month"].replace(months,[1,2,3,4,5,6,7,8,9,10,11,12])
-hotels["Arrival date"] = pd.to_datetime(hotels.arrival_date_year*10000 + hotels.month*100 + hotels.arrival_date_day_of_month, 
+hotels["arrival_date_month"] = hotels["arrival_date_month"].replace(months,[1,2,3,4,5,6,7,8,9,10,11,12])
+hotels["Arrival date"] = pd.to_datetime(hotels.arrival_date_year*10000 + hotels.arrival_date_month*100 + hotels.arrival_date_day_of_month, 
                                         format = '%Y%m%d')
+hotels["Total nights"] = hotels["stays_in_weekend_nights"] + hotels["stays_in_week_nights"]
 # drop unused columns
-hotels = hotels.drop(columns=['agent', 'company', 'month', 'lead_time',
+hotels = hotels.drop(columns=['agent', 'company', 'lead_time',
                               'market_segment', 'distribution_channel',
                               'is_repeated_guest', 'previous_cancellations',
                               'previous_bookings_not_canceled', 'reserved_room_type',
@@ -31,16 +32,13 @@ hotels = hotels.drop(columns=['agent', 'company', 'month', 'lead_time',
                               'reservation_status_date', 'meal'], )
 # Change values to make more readable
 hotels["hotel"] = hotels["hotel"].replace(["Resort Hotel", "City Hotel"], ["Resort", "City"])
-
 # change column names
-hotels.columns = ['Hotel type', 'Canceled', 'Arrival year',
-       'Arrival month', 'Arrival week',
-       'Arrival day', 'Weekend nights', 'Week nights', 'Adults', 'Children', 'Babies',
+hotels.columns = ['Hotel type', 'Cancelled', 'Arrival year',
+       'Arrival month', 'Arrival week', 'Arrival day', 'Weekend nights', 
+       'Week nights', 'Adults', 'Children', 'Babies',
        'Country of origin', 'Booking changes', 'Average daily rate',
-       'Required parking spaces', 'Special requests', 'Arrival date']# create daily rate per serson column
-hotels["Average daily rate per person"] = hotels["Average daily rate"] / (
-        hotels["Adults"] + hotels["Children"])
-              
+       'Required parking spaces', 'Special requests', "Arrival date",'Total nights']
+                 
 # # create date index column for date slider
 # hotels["arrival_date_index"] = pd.to_numeric(hotels["Arrival date"])/60/60/24/10**9
 # start_date = hotels["arrival_date_index"][0]
