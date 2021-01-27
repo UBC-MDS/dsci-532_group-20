@@ -52,8 +52,8 @@ def get_month_data(hotel_type="All", y_col = "Reservations", year = 2016,  month
         data[str(year)] = hotels[hotels["Arrival year"] == year].groupby("Arrival day")[y_col].mean()
 
     else:
-        data["Average"] = df.groupby("Arrival day")[y_col].sum() / df.groupby("Arrival day")["Arrival year"].nunique()
-        data[str(year)] = df[df["Arrival year"] == year].groupby("Arrival day")[y_col].sum() 
+        data["Average"] = hotels.groupby("Arrival day")[y_col].sum() / hotels.groupby("Arrival day")["Arrival year"].nunique()
+        data[str(year)] = hotels[hotels["Arrival year"] == year].groupby("Arrival day")[y_col].sum() 
         
     data = data.reset_index()
     data = pd.melt(data, 'Arrival day').rename(columns = {"variable": "Line", "value": y_col})

@@ -47,129 +47,85 @@ info_area = dbc.Container(
         dbc.Row(
             [
                 dbc.Col(
-                    [
-                        html.H4("Select the y-axis variable"),
-                        dcc.Dropdown(
-                            id="y-axis-dropdown",
-                            options=[
-                                {"label": column, "value": column} for column in columns
-                            ],
-                            value=columns[0],
-                            multi=False,
-                            searchable=False,
-                            clearable=False,
-                        ),
-                        html.H4("Select a year"),
-                        dcc.Dropdown(
-                            id="year-dropdown",
-                            options=[
-                                {"label": year, "value": year} for year in years
-                            ],
-                            value=2016,
-                            multi=False,
-                            searchable=False,
-                            clearable=False,
-                        ),
-                        html.H4("Select a month"),
-                        dcc.Dropdown(
-                            id="month-dropdown",
-                            options=[
-                                {"label": months[i], "value": i+1} for i in range(12)
-                            ],
-                            value=1,
-                            multi=False,
-                            searchable=False,
-                            clearable=False,
-                        ),
-                        html.Br(),
-                        html.H4("Select Hotel Type"),
-                        dcc.RadioItems(
-                            id="hotel-type-selection",
-                            options=[
-                                {"label": "All Hotels", "value": "All"},
-                                {"label": "Resort Hotel", "value": "Resort"},
-                                {"label": "City Hotel", "value": "City"},
-                            ],
-                            value="All",
-                            labelStyle={"display": "block"},
-                        ),
+                    [html.H4("Select the y-axis variable"),
+                    dcc.Dropdown(
+                        id="y-axis-dropdown",
+                        options=[{"label": column, "value": column} for column in columns],
+                        value=columns[0],
+                        multi=False,
+                        searchable=False,
+                        clearable=False,),
+                    html.H4("Select a year"),
+                    dcc.Dropdown(
+                        id="year-dropdown",
+                        options=[{"label": year, "value": year} for year in years],
+                        value=2016,
+                        multi=False,
+                        searchable=False,
+                        clearable=False,),
+                    html.H4("Select a month"),
+                    dcc.Dropdown(
+                        id="month-dropdown",
+                        options=[{"label": months[i], "value": i+1} for i in range(12)],
+                        value=1,
+                        multi=False,
+                        searchable=False,
+                        clearable=False,),
+                    html.Br(),
+                    html.H4("Select Hotel Type"),
+                    dcc.RadioItems(
+                        id="hotel-type-selection",
+                        options=[
+                            {"label": "All Hotels", "value": "All"},
+                            {"label": "Resort Hotel", "value": "Resort"},
+                            {"label": "City Hotel", "value": "City"},],
+                        value="All",
+                        labelStyle={"display": "block"},),
                     ],
-                    md=3,
-                ),
+                    md=3,),
         
                 dbc.Col(
-                    [
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    [             
-                                    html.Iframe(
-                                        id="year-plot",
-                                        style={
-                                            "border-width": "0",
-                                            "width": "100%",
-                                            "height": "500px",
-                                        },
-                                    ),
-                                    ]
-                                ),
-                                dbc.Col(
-                                    [               
-                                    html.Iframe(
-                                        id="month-plot",
-                                        style={
-                                            "border-width": "0",
-                                            "width": "100%",
-                                            "height": "500px",
-                                        },
-                                    )
-                                    ]
-                                ),
-                            ]
-                        ),
-                        dbc.Row(
-                            [
-                                html.H4("Year summaries"),               
-                                html.Iframe(
-                                    id="year-summaries",
+                    [dbc.Row(
+                        [dbc.Col([html.Iframe(
+                                    id="year-plot",
                                     style={
                                         "border-width": "0",
-                                        "width": "50%",
-                                        "height": "75px",
-                                    },
-                                ),
-                                html.H4("Month summaries"),
-                                html.Iframe(
-                                    id="month-summaries",
-                                    style={
-                                        "border-width": "0",
-                                        "width": "50%",
-                                        "height": "75px",
-                                    },
-                                )
-                            ]
-                        ),
-                        dbc.Row(
-                            [
-                                html.Iframe(
-                                    id="hist1",
-                                    style={
-                                        "border-width": "0",
-                                        "width": "50%",
-                                        "height": "500px",
-                                    },
-                                ),
-                                html.Iframe(
-                                    id="hist2",
-                                    style={
-                                        "border-width": "0",
-                                        "width": "50%",
-                                        "height": "500px",
-                                    },
-                                ),
-                            ]
-                        ),
-                    ]
+                                        "width": "100%",
+                                        "height": "500px",},),]),
+                        dbc.Col([html.Iframe(
+                                id="month-plot",
+                                style={
+                                    "border-width": "0",
+                                    "width": "100%",
+                                    "height": "500px",},)]),]),
+                    dbc.Row(
+                        [html.H4("Year summaries"),
+                        html.Iframe(
+                            id="year-summaries",
+                            style={
+                                "border-width": "0",
+                                "width": "50%",
+                                "height": "75px" },),
+                        html.H4("Month summaries"),
+                        html.Iframe(
+                            id="month-summaries",
+                            style={
+                                "border-width": "0",
+                                "width": "50%",
+                                "height": "75px",},)]),
+                    dbc.Row(
+                        [html.Iframe(
+                            id="hist1",
+                            style={
+                                "border-width": "0",
+                                "width": "50%",
+                                "height": "500px",},),
+                        html.Iframe(
+                            id="hist2",
+                            style={
+                                "border-width": "0",
+                                "width": "50%",
+                                "height": "500px", },),]),]
                 ),
             ]
         ),
@@ -218,9 +174,9 @@ def plot_month(hotel_type = "All", y_col = "Reservations", year = 2016, month = 
     df = get_month_data(hotel_type, y_col, year, month)
     
     lines = (
-        alt.Chart(df, title=y_col + " for the month of " + str(month))
+        alt.Chart(df, title=y_col + " for " + months[month-1] + " " + str(year))
         .mark_line(color="orange")
-        .encode(alt.X("Arrival day", title="Date", axis=alt.Axis(grid=False, labelAngle=-30)),
+        .encode(alt.X("Arrival day", title="Date", axis=alt.Axis(grid=False)),
                              alt.Y(y_col, title = y_col, scale=alt.Scale(zero=True)),
                              alt.Color("Line"),
                              alt.Tooltip(y_col))
