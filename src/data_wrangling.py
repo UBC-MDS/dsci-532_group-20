@@ -4,8 +4,7 @@ import numpy as np
 # Read in data and select hotel type
 # Returns the main dataframe filtered by hotel type
 def select_type(hotel_type="All"):
-    hotels = pd.read_csv("data/processed/clean_hotels.csv")
-    # hotels = hotels.replace([np.inf, -np.inf], np.nan).dropna()    
+    hotels = pd.read_csv("data/processed/clean_hotels.csv")  
     # filter based on hotel type selection
     if hotel_type == "Resort":
         hotels = hotels[hotels["Hotel type"] == "Resort"]
@@ -60,21 +59,25 @@ def get_month_data(hotel_type="All", y_col = "Reservations", year = 2016,  month
     return data
 
 
-# Dataframe for countries plot:
-def left_plot(hotel_type="All", weeks=[1, 53]):
-    df = getdata(hotel_type, weeks)
-    top_20_countries = (
+# Dataframe for countries histogram:
+def left_hist_data(hotel_type = "All", year = 2016, month = 1):
+    df = select_type(hotel_type)
+    df = df[df["Arrival year"] == year]
+    df = df[df["Arrival month"] == month]
+    top_10_countries = (
         df.groupby("Country of origin")
         .size()
         .reset_index(name="counts")
-        .sort_values(by="counts", ascending=False)[:20]
+        .sort_values(by="counts", ascending=False)[:10]
     )
-    return top_20_countries
+    return top_10_countries
 
 
 # Dataframe for Stay Length plot:
-def right_plot(hotel_type="All", weeks=[1, 53]):
-    df = getdata(hotel_type, weeks)
+def right_hist_data(hotel_type = "All", year = 2016, month = 1):
+    df = select_type(hotel_type)
+    df = df[df["Arrival year"] == year]
+    df = df[df["Arrival month"] == month]
     df["Total Nights of Stay"] = df["Weekend nights"] + df["Week nights"]
     num_nights = list(df["Total Nights of Stay"].value_counts().index)
     num_bookings = list(df["Total Nights of Stay"].value_counts())
@@ -83,7 +86,7 @@ def right_plot(hotel_type="All", weeks=[1, 53]):
     )  # convert to percent
     stay_nights = pd.DataFrame(
         {
-            "hotel": "Both Hotels",
+            "hotel": hotel_type,
             "Number of Nights of Stay": num_nights,
             "Percent of Reservations": rel_bookings,
         }

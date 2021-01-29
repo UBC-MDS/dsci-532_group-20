@@ -13,7 +13,7 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 
 # Import functions from data_wrangling script
-from data_wrangling import get_year_data, get_month_data, left_plot, right_plot
+from data_wrangling import get_year_data, get_month_data, left_hist_data, right_hist_data
 
 # Columns for drop-down menus
 columns = ["Reservations", "Average daily rate", 'Adults', 
@@ -82,7 +82,7 @@ info_area = dbc.Container(
                         value="All",
                         labelStyle={"display": "block"},),
                     ],
-                    md=3,),
+                    md=2,),
         
                 dbc.Col(
                     [dbc.Row(
@@ -127,7 +127,7 @@ info_area = dbc.Container(
                                 "width": "50%",
                                 "height": "500px", },),]),]
                 ),
-            ]
+            ],no_gutters=True,
         ),
     ],
     style={"max-width": "80%"},
@@ -186,56 +186,59 @@ def plot_month(hotel_type = "All", y_col = "Reservations", year = 2016, month = 
     ).configure_title(fontSize=23)
     return chart.to_html()
 
+############################################# Histograms ################################
+@app.callback(
+    Output("hist1", "srcDoc"),
+    Input("hotel-type-selection", "value"),
+    Input("year-dropdown", "value"),
+    Input("month-dropdown", "value")
+)
+# Function to plot the bottom left histogram using selected hotel type and dates
+def histogram_1(hotel_type, year, month):
+    df = left_hist_data(hotel_type, year, month)
+    top_countries = (
+        alt.Chart(df, title="Top 10 Home Countries of Guests")
+        .mark_bar(color="orange")
+        .encode(
+            alt.Y("Country of origin", sort="-x", title="Countries"),
+            alt.X("counts", title="Reservations"),
+            alt.Tooltip("Country of origin"),
+        )
+        .properties(width=300, height=200)
+        .configure_axis(labelFontSize=10, titleFontSize=15)
+        .configure_title(fontSize=19)
+    )
+    return top_countries.to_html()
 
-# @app.callback(
-#     Output("hist1", "srcDoc"),
-#     Input("hotel-type-selection", "value"),
-#     Input("week-selection", "value"),
-# )
-# # Function to plot the bottom left plot using selected hotel type
-# def histogram_1(hotel_type, weeks):
-#     df = left_plot(hotel_type, weeks)
-#     top_countries = (
-#         alt.Chart(df, title="Top 20 Home Countries of Guests")
-#         .mark_bar(color="orange")
-#         .encode(
-#             alt.X("Country of origin", sort="-y", title="Countries"),
-#             alt.Y("counts", title="Reservations"),
-#             alt.Tooltip("Country of origin"),
-#         )
-#         .properties(width=300, height=200)
-#         .configure_axis(labelFontSize=10, titleFontSize=15)
-#         .configure_title(fontSize=19)
-#     )
-#     return top_countries.to_html()
 
+@app.callback(
+    Output("hist2", "srcDoc"),
+    Input("hotel-type-selection", "value"),
+    Input("year-dropdown", "value"),
+    Input("month-dropdown", "value")
+)
 
-# @app.callback(
-#     Output("hist2", "srcDoc"),
-#     Input("hotel-type-selection", "value"),
-#     Input("week-selection", "value"),
-# )
-# # Function to plot the bottom right plot using selected hotel type
-# def histogram_2(hotel_type, weeks):
-#     df = right_plot(hotel_type, weeks)
-#     stay = (
-#         alt.Chart(df, title="Length of Guests Stay")
-#         .mark_bar(clip=True, color="orange")
-#         .encode(
-#             alt.X(
-#                 "Number of Nights of Stay",
-#                 title="Number of nights of stay",
-#                 scale=alt.Scale(domain=(0, 15)),
-#                 bin=alt.Bin(maxbins=75),
-#             ),
-#             alt.Y("Percent of Reservations", title="Percent of Reservations"),
-#             alt.Tooltip("Percent of Reservations"),
-#         )
-#         .properties(width=300, height=200)
-#         .configure_axis(labelFontSize=10, titleFontSize=15)
-#         .configure_title(fontSize=19)
-#     )
-#     return stay.to_html()
+# Function to plot the bottom right plot using selected hotel type
+def histogram_2(hotel_type, year, month):
+    df = right_hist_data(hotel_type, year, month)
+    stay = (
+        alt.Chart(df, title="Length of Guests Stay")
+        .mark_bar(clip=True, color="orange")
+        .encode(
+            alt.X(
+                "Number of Nights of Stay",
+                title="Number of nights of stay",
+                scale=alt.Scale(domain=(0, 15)),
+                bin=alt.Bin(maxbins=75),
+            ),
+            alt.Y("Percent of Reservations", title="Percent of Reservations"),
+            alt.Tooltip("Percent of Reservations"),
+        )
+        .properties(width=300, height=200)
+        .configure_axis(labelFontSize=10, titleFontSize=15)
+        .configure_title(fontSize=19)
+    )
+    return stay.to_html()
 
 
 if __name__ == "__main__":
