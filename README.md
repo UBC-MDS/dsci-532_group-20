@@ -1,4 +1,6 @@
-# Super-Hotels-Happy-Manager-Info
+# Super Hotel Management
+
+[View Dashboard](https://dsci532group20.herokuapp.com/)
 
 This app generates a plot of any two of the variables in the hotel reservation dataset. The variables to be plotted are selected from drop-down menus. Depending on the type of variable the plot may be a line plot, scatter plot, or bar chart. Along with the main plot, a histogram of each of the x and y variables will be plotted, with a summary of the top five most common entries from the histogram.
 
