@@ -55,7 +55,14 @@ def get_month_data(hotel_type="All", y_col = "Reservations", year = 2016,  month
         data[str(year)] = hotels[hotels["Arrival year"] == year].groupby("Arrival day")[y_col].sum() 
         
     data = data.reset_index()
+
     data = pd.melt(data, 'Arrival day').rename(columns = {"variable": "Line", "value": y_col})
+
+    # get the day of the week for the selected year
+    data["Arrival day of week"] = pd.to_datetime(year*10000 + month*100 + data["Arrival day"], format = '%Y%m%d')
+    data["Arrival day of week"] = data["Arrival day of week"].dt.dayofweek
+    data["Arrival day of week"] = data["Arrival day of week"].replace([0,1,2,3,4,5,6],["Mon", "Tues", "Wed", "Thur", "Fri", "Sat", "Sun"])
+    
     return data
 
 
@@ -64,34 +71,29 @@ def left_hist_data(hotel_type = "All", year = 2016, month = 1):
     df = select_type(hotel_type)
     df = df[df["Arrival year"] == year]
     df = df[df["Arrival month"] == month]
-    top_10_countries = (
+    df = (
         df.groupby("Country of origin")
         .size()
         .reset_index(name="counts")
         .sort_values(by="counts", ascending=False)[:10]
     )
-    return top_10_countries
+    return df
 
 
 # Dataframe for Stay Length plot:
 def right_hist_data(hotel_type = "All", year = 2016, month = 1):
     df = select_type(hotel_type)
+    # select relevant columns then filter by year and month
+    df = df[["Arrival year", "Arrival month", "Total nights"]]
     df = df[df["Arrival year"] == year]
     df = df[df["Arrival month"] == month]
-    df["Total Nights of Stay"] = df["Weekend nights"] + df["Week nights"]
-    num_nights = list(df["Total Nights of Stay"].value_counts().index)
-    num_bookings = list(df["Total Nights of Stay"].value_counts())
-    rel_bookings = (
-        df["Total Nights of Stay"].value_counts() / sum(num_bookings) * 100
-    )  # convert to percent
-    stay_nights = pd.DataFrame(
-        {
-            "hotel": hotel_type,
-            "Number of Nights of Stay": num_nights,
-            "Percent of Reservations": rel_bookings,
-        }
-    )
-    return stay_nights
+    # calculate counts for total nights
+    df = df.groupby("Total nights").count() / df.groupby("Total nights").count().sum() * 100
+    df = df.reset_index().drop(columns = "Arrival year")
+    df.columns = ["Total nights", "Percent of Reservations"]
+
+    return df
+
 
 
 if __name__ == "__main__":
