@@ -1,101 +1,99 @@
 import pandas as pd
 import numpy as np
 
-# Read in data from processed data
-def getdata(hotel_type="All", weeks=[1, 53]):
-    hotels = pd.read_csv("data/processed/clean_hotels.csv")
-    hotel_trim = hotels.copy()
-
+# Read in data and select hotel type
+# Returns the main dataframe filtered by hotel type
+def select_type(hotel_type="All"):
+    hotels = pd.read_csv("data/processed/clean_hotels.csv")  
     # filter based on hotel type selection
-    hotel_trim = hotel_trim.replace([np.inf, -np.inf], np.nan).dropna()
     if hotel_type == "Resort":
-        hotel_trim = hotel_trim[hotel_trim["Hotel type"] == "Resort"]
+        hotels = hotels[hotels["Hotel type"] == "Resort"]
     if hotel_type == "City":
-        hotel_trim = hotel_trim[hotel_trim["Hotel type"] == "City"]
-    # filter based on weeks selected
-    hotel_trim = hotel_trim[hotel_trim["Arrival week"].between(weeks[0], weeks[1])]
+        hotels = hotels[hotels["Hotel type"] == "City"]
+    return hotels
 
-    return hotel_trim
+# get data for `year-plot`
+def get_year_data(hotel_type, y_col, year):
+    hotels = select_type(hotel_type)
+    data = pd.DataFrame()
+    if y_col == "Reservations":
+        # get average of all years
+        data["Average"] = hotels.groupby("Arrival month")["Hotel type"].count() / hotels.groupby("Arrival month")["Arrival year"].nunique()
+        # get values for selected year only
+        data[str(year)] = hotels[hotels["Arrival year"] == year].groupby("Arrival month")["Hotel type"].count() 
+    elif y_col == "Average daily rate":
+        data["Average"] = hotels.groupby("Arrival month")[y_col].mean()
+        data[str(year)] = hotels[hotels["Arrival year"] == year].groupby("Arrival month")[y_col].mean()
+
+    else:
+        data["Average"] = hotels.groupby("Arrival month")[y_col].sum() / hotels.groupby("Arrival month")["Arrival year"].nunique()
+        data[str(year)] = hotels[hotels["Arrival year"] == year].groupby("Arrival month")[y_col].sum() 
+          
+    # make the month_no a column
+    data = data.reset_index()
+    data = pd.melt(data, 'Arrival month').rename(columns = {"variable": "Line", "value": y_col})
+
+    return data
+
+# Read in data data for `month-plot`
+def get_month_data(hotel_type="All", y_col = "Reservations", year = 2016,  month = 1,):
+    hotels = select_type(hotel_type)
+    # for monthly plots, group data by day
+    hotels = hotels[hotels["Arrival month"] == month]
+    data = pd.DataFrame()
+    if y_col == "Reservations":
+        # get average of all years
+        data["Average"] = hotels.groupby("Arrival day")["Hotel type"].count() / hotels.groupby("Arrival day")["Arrival year"].nunique()
+        # get values for selected year only
+        data[str(year)] = hotels[hotels["Arrival year"] == year].groupby("Arrival day")["Hotel type"].count() 
+    elif y_col == "Average daily rate":
+        data["Average"] = hotels.groupby("Arrival day")[y_col].mean()
+        data[str(year)] = hotels[hotels["Arrival year"] == year].groupby("Arrival day")[y_col].mean()
+
+    else:
+        data["Average"] = hotels.groupby("Arrival day")[y_col].sum() / hotels.groupby("Arrival day")["Arrival year"].nunique()
+        data[str(year)] = hotels[hotels["Arrival year"] == year].groupby("Arrival day")[y_col].sum() 
+        
+    data = data.reset_index()
+
+    data = pd.melt(data, 'Arrival day').rename(columns = {"variable": "Line", "value": y_col})
+
+    # get the day of the week for the selected year
+    data["Arrival day of week"] = pd.to_datetime(year*10000 + month*100 + data["Arrival day"], format = '%Y%m%d')
+    data["Arrival day of week"] = data["Arrival day of week"].dt.dayofweek
+    data["Arrival day of week"] = data["Arrival day of week"].replace([0,1,2,3,4,5,6],["Mon", "Tues", "Wed", "Thur", "Fri", "Sat", "Sun"])
+    
+    return data
 
 
-# Dataframe for main plots:
-def main_plot(hotel_type="All", weeks=[1, 53], y_col = "Reservations"):
-    df = getdata(hotel_type, weeks)
-    # if y_col == "Reservations":
-    #     print(y_col)
-    #     data_weekly = df.groupby("Arrival week")["Hotel type"].count() / df["Arrival year"].value_counts().count()
-    #     data_weekly = pd.DataFrame(data_weekly)
-    #     data_weekly = data_weekly.rename(columns={"Hotel type": "Reservations"}).reset_index()
-    # elif y_col == "Average daily rate per person":
-    #     print(y_col)
-    #     data_weekly = df.groupby("Arrival week")["Average daily rate per person"].mean()
-    #     data_weekly = pd.DataFrame(data_weekly)
-    # elif y_col == "Required parking spaces":
-    #     print(y_col)
-    #     data_weekly = df.groupby("Arrival week")["Required parking spaces"].sum() / df["Arrival year"].value_counts().count()/ 7
-    #     data_weekly = pd.DataFrame(data_weekly)
-    # else:#
-    #     print(y_col)
-    #     data_weekly = df.groupby("Arrival week")["Adults"].sum() / df["Arrival year"].value_counts().count()
-    #     data_weekly = pd.DataFrame(data_weekly)
-
-    ###################################
-    reservations_weekly = df.groupby("Arrival week")["Hotel type"].count() / df["Arrival year"].value_counts().count()
-    prices_weekly = df.groupby("Arrival week")["Average daily rate per person"].mean()
-    parking_weekly = df.groupby("Arrival week")["Required parking spaces"].sum() / df["Arrival year"].value_counts().count()
-    adults_weekly = df.groupby("Arrival week")["Adults"].sum() / df["Arrival year"].value_counts().count()
-
-    # canceled_weekly = df.groupby("Arrival week")["Canceled"].count() / df["Arrival year"].value_counts().count()
-    children_weekly = df.groupby("Arrival week")['Children'].sum() / df["Arrival year"].value_counts().count()
-    babies_weekly = df.groupby("Arrival week")['Babies'].sum() / df["Arrival year"].value_counts().count()
-    changes_weekly = df.groupby("Arrival week")['Booking changes'].sum() / df["Arrival year"].value_counts().count()
-    special_weekly = df.groupby("Arrival week")['Special requests'].sum() / df["Arrival year"].value_counts().count()
-
-
-    data_weekly = pd.merge(reservations_weekly, prices_weekly, on="Arrival week")
-    data_weekly = pd.merge(data_weekly, parking_weekly, on="Arrival week")
-    data_weekly = pd.merge(data_weekly, adults_weekly, on="Arrival week")
-    # data_weekly = pd.merge(data_weekly, canceled_weekly, on="Arrival week")
-    data_weekly = pd.merge(data_weekly, children_weekly, on="Arrival week")
-    data_weekly = pd.merge(data_weekly, babies_weekly, on="Arrival week")
-    data_weekly = pd.merge(data_weekly, changes_weekly, on="Arrival week")
-    data_weekly = pd.merge(data_weekly, special_weekly, on="Arrival week")
-    data_weekly = data_weekly.rename(
-        columns={"Hotel type": "Reservations"}
-    ).reset_index()
-
-    return data_weekly
-
-
-# Dataframe for countries plot:
-def left_plot(hotel_type="All", weeks=[1, 53]):
-    df = getdata(hotel_type, weeks)
-    top_20_countries = (
+# Dataframe for countries histogram:
+def left_hist_data(hotel_type = "All", year = 2016, month = 1):
+    df = select_type(hotel_type)
+    df = df[df["Arrival year"] == year]
+    df = df[df["Arrival month"] == month]
+    df = (
         df.groupby("Country of origin")
         .size()
         .reset_index(name="counts")
-        .sort_values(by="counts", ascending=False)[:20]
+        .sort_values(by="counts", ascending=False)[:10]
     )
-    return top_20_countries
+    return df
 
 
 # Dataframe for Stay Length plot:
-def right_plot(hotel_type="All", weeks=[1, 53]):
-    df = getdata(hotel_type, weeks)
-    df["Total Nights of Stay"] = df["Weekend nights"] + df["Week nights"]
-    num_nights = list(df["Total Nights of Stay"].value_counts().index)
-    num_bookings = list(df["Total Nights of Stay"].value_counts())
-    rel_bookings = (
-        df["Total Nights of Stay"].value_counts() / sum(num_bookings) * 100
-    )  # convert to percent
-    stay_nights = pd.DataFrame(
-        {
-            "hotel": "Both Hotels",
-            "Number of Nights of Stay": num_nights,
-            "Percent of Reservations": rel_bookings,
-        }
-    )
-    return stay_nights
+def right_hist_data(hotel_type = "All", year = 2016, month = 1):
+    df = select_type(hotel_type)
+    # select relevant columns then filter by year and month
+    df = df[["Arrival year", "Arrival month", "Total nights"]]
+    df = df[df["Arrival year"] == year]
+    df = df[df["Arrival month"] == month]
+    # calculate counts for total nights
+    df = df.groupby("Total nights").count() / df.groupby("Total nights").count().sum() * 100
+    df = df.reset_index().drop(columns = "Arrival year")
+    df.columns = ["Total nights", "Percent of Reservations"]
+
+    return df
+
 
 
 if __name__ == "__main__":
