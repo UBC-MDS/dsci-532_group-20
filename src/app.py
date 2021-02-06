@@ -18,7 +18,9 @@ from data_wrangling import (
     right_hist_data,
 )
 
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(
+    external_stylesheets=[dbc.themes.BOOTSTRAP], title="Super Hotel Management"
+)
 server = app.server  # to deploy the app
 
 
