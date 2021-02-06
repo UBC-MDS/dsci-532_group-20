@@ -4,7 +4,7 @@
 
 The intent of this app is to display the key metrics and trends of hotel booking demand in Portugal and further allow users to explore different aspects of this data by filtering different variables to better understand customer's needs. A preview of the dashboard can be seen below:
 
-![app_mockup.png](results/img/hotel.png)
+[app_mockup.png](results/img/hotel.png)
 
 Users can select the year, month and hotel type they are interested in by using the respective drop down menus and radio button from global control. These filters will be applied on the entire dashboard including summary cards. Once these fields are filled out, the page will populate several plots with aggregated data that the user can explore in greater detail.
 
