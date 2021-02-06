@@ -1,9 +1,20 @@
 import pandas as pd
 import numpy as np
 
-# Read in data and select hotel type
-# Returns the main dataframe filtered by hotel type
+
+
 def select_type(hotel_type="All"):
+    """Reads the "data/processed/clean_hotels.csv" source file and returns
+        a data frame filtered by hotel type
+
+    Parameters
+    ----------
+    hotel_type : string, either "City", "Resort", or "Both
+
+    Returns
+    -------
+    dataframe with hotel data filtered by hotel type
+    """    
     hotels = pd.read_csv("data/processed/clean_hotels.csv")  
     # filter based on hotel type selection
     if hotel_type == "Resort":
@@ -12,20 +23,30 @@ def select_type(hotel_type="All"):
         hotels = hotels[hotels["Hotel type"] == "City"]
     return hotels
 
-# get data for `year-plot`
+
 def get_year_data(hotel_type, y_col, year):
+    """returns a data frame containing monthly summaries of one variable for 
+    the selected hotel type, for the selected year and for all-time                                      
+
+    Parameters
+    ----------
+    hotel_type : string, either "City", "Resort", or "Both
+    y_col:       the variable selected from "y-axis-dropdown"
+    year:        the year selected from "year-dropdown"
+
+    Returns
+    -------
+    dataframe:  monthly summaries of selected variable for the selected time period
+    """    
     hotels = select_type(hotel_type)
     data = pd.DataFrame()
-    if y_col == "Reservations":
-        # get average of all years
+    if y_col == "Reservations":            # count number of "Reservations"
         data["Average"] = hotels.groupby("Arrival month")["Hotel type"].count() / hotels.groupby("Arrival month")["Arrival year"].nunique()
-        # get values for selected year only
         data[str(year)] = hotels[hotels["Arrival year"] == year].groupby("Arrival month")["Hotel type"].count() 
-    elif y_col == "Average daily rate":
+    elif y_col == "Average daily rate":     # average the "Average daily rate"
         data["Average"] = hotels.groupby("Arrival month")[y_col].mean()
         data[str(year)] = hotels[hotels["Arrival year"] == year].groupby("Arrival month")[y_col].mean()
-
-    else:
+    else:                                   # sum the other variables
         data["Average"] = hotels.groupby("Arrival month")[y_col].sum() / hotels.groupby("Arrival month")["Arrival year"].nunique()
         data[str(year)] = hotels[hotels["Arrival year"] == year].groupby("Arrival month")[y_col].sum() 
           
@@ -35,28 +56,40 @@ def get_year_data(hotel_type, y_col, year):
 
     return data
 
-# Read in data data for `month-plot`
+
 def get_month_data(hotel_type="All", y_col = "Reservations", year = 2016,  month = 1,):
+    """returns a data frame containing monthly summaries of one variable for 
+    the selected hotel type, for the selected year and for all-time                                      
+
+    Parameters
+    ----------
+    hotel_type : string, either "City", "Resort", or "Both
+    y_col:       the variable selected from "y-axis-dropdown"
+    year:        the year selected from "year-dropdown"
+    month:       the month selected from "month-dropdown"
+
+    Returns
+    -------
+    dataframe:  daily summaries of selected variable for the selected time period
+    """
     hotels = select_type(hotel_type)
-    # for monthly plots, group data by day
     hotels = hotels[hotels["Arrival month"] == month]
     data = pd.DataFrame()
-    if y_col == "Reservations":
-        # get average of all years
+    if y_col == "Reservations":             # count number of "Reservations"
         data["Average"] = hotels.groupby("Arrival day")["Hotel type"].count() / hotels.groupby("Arrival day")["Arrival year"].nunique()
-        # get values for selected year only
         data[str(year)] = hotels[hotels["Arrival year"] == year].groupby("Arrival day")["Hotel type"].count() 
-    elif y_col == "Average daily rate":
+    elif y_col == "Average daily rate":     # average the "Average daily rate"
         data["Average"] = hotels.groupby("Arrival day")[y_col].mean()
         data[str(year)] = hotels[hotels["Arrival year"] == year].groupby("Arrival day")[y_col].mean()
-
-    else:
+    else:                                   # sum the other variables
         data["Average"] = hotels.groupby("Arrival day")[y_col].sum() / hotels.groupby("Arrival day")["Arrival year"].nunique()
         data[str(year)] = hotels[hotels["Arrival year"] == year].groupby("Arrival day")[y_col].sum() 
-        
     data = data.reset_index()
-
     data = pd.melt(data, 'Arrival day').rename(columns = {"variable": "Line", "value": y_col})
+
+    # filter out feb 29 for non-leap years
+    if (year % 4 != 0) and month == 2:
+        data = data[data["Arrival day"] != 29]
 
     # get the day of the week for the selected year
     data["Arrival day of week"] = pd.to_datetime(year*10000 + month*100 + data["Arrival day"], format = '%Y%m%d')
@@ -66,8 +99,20 @@ def get_month_data(hotel_type="All", y_col = "Reservations", year = 2016,  month
     return data
 
 
-# Dataframe for countries histogram:
 def left_hist_data(hotel_type = "All", year = 2016, month = 1):
+    """returns a data frame containing binned counts of hotel guests' country of origin
+    for the selected hotel type and time period                                      
+
+    Parameters
+    ----------
+    hotel_type : string, either "City", "Resort", or "Both
+    year:        the year selected from "year-dropdown"
+    month:       the month selected from "month-dropdown"
+
+    Returns
+    -------
+    dataframe:  containing binned counts of hotel guests' country of origin
+    """
     df = select_type(hotel_type)
     df = df[df["Arrival year"] == year]
     df = df[df["Arrival month"] == month]
@@ -80,8 +125,20 @@ def left_hist_data(hotel_type = "All", year = 2016, month = 1):
     return df
 
 
-# Dataframe for Stay Length plot:
 def right_hist_data(hotel_type = "All", year = 2016, month = 1):
+    """returns a data frame containing binned counts of the duration of guests' stay
+    for the selected hotel type and time period                                      
+
+    Parameters
+    ----------
+    hotel_type : string, either "City", "Resort", or "Both
+    year:        the year selected from "year-dropdown"
+    month:       the month selected from "month-dropdown"
+
+    Returns
+    -------
+    dataframe:  containing binned counts of duration of guests' stay
+    """
     df = select_type(hotel_type)
     # select relevant columns then filter by year and month
     df = df[["Arrival year", "Arrival month", "Total nights"]]
@@ -93,7 +150,6 @@ def right_hist_data(hotel_type = "All", year = 2016, month = 1):
     df.columns = ["Total nights", "Percent of Reservations"]
 
     return df
-
 
 
 if __name__ == "__main__":
