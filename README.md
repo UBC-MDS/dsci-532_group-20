@@ -1,9 +1,19 @@
 # Super Hotel Management
 
-[View Dashboard](https://dsci532group20.herokuapp.com/)
+[View Dashboard](https://super-hotels.herokuapp.com/)
 
-This app generates a plot of any two of the variables in the hotel reservation dataset. The variables to be plotted are selected from drop-down menus. Depending on the type of variable the plot may be a line plot, scatter plot, or bar chart. Along with the main plot, a histogram of each of the x and y variables will be plotted, with a summary of the top five most common entries from the histogram.
+The intent of this app is to display the key metrics and trends of hotel booking demand in Portugal and further allow users to explore different aspects of this data by filtering different variables to better understand customer's needs. A preview of the dashboard can be seen below:
 
-A slider will allow users to control the date range of the data displayed. A tile will display how many entries are displayed in the selected date range. Radio buttons will allow users to select between city hotels, resort hotels, or both types.
+![app_mockup.png](results/img/hotel.png)
 
-![app_mockup.png](results/img/app_mockup.png)
+Users can select the year, month and hotel type they are interested in by using the respective drop down menus and radio button from global control. These filters will be applied on the entire dashboard including summary cards. Once these fields are filled out, the page will populate several plots with aggregated data that the user can explore in greater detail.
+
+There is also a further option to select features such as reservations, average daily rate etc. from the top horizontal filter which controls the top two trend charts. The summary card will also change as per selection. The main functionality of this dashboard is to provide a more detailed look at monthly/daily trends, origin of the countries to identify the key location of customers and length of stay at the hotel.
+
+# Get Involved
+
+We are always looking for feedback and contributors! You can run the app locally and contribute by:
+
+1.	Forking this repo
+2.  Installing the enviornment by using `environment.yaml`
+3.	Adding your improvements to the app.py file in the `src/` folder
