@@ -77,7 +77,7 @@ collapse = html.Div(
                 "width": "150px",
                 "background-color": "white",
                 "color": "black",
-                "fontWeight": "bold",
+                # "fontWeight": "bold",
                 # "border": "0.5px solid #FFA500",
             },
         ),
@@ -97,7 +97,7 @@ instruction = html.Div(
                 "height": "35px",
                 "background-color": "white",
                 "color": "black",
-                "fontWeight": "bold",
+                # "fontWeight": "bold",
                 # "border": "0.5px solid #FFA500",
             },
         ),
@@ -149,7 +149,7 @@ card_top = dbc.Card(
                                 instruction,
                                 dbc.Collapse(
                                     html.P(
-                                        "Starting using by selecting feature on the left, and interacting with plots by selecting legends and scolling to zoom",
+                                        "Starting using by selecting feature on the left, and interacting with plots by selecting legends and scrolling to zoom",
                                         className="lead",
                                     ),
                                     id="instruction",
@@ -183,7 +183,7 @@ card_top = dbc.Card(
                                     children="",
                                     style={
                                         "text-align": "center",
-                                        "fontWeight": "bold",
+                                        # "fontWeight": "bold",
                                         "color": "#537aaa",
                                     },
                                 ),
@@ -192,7 +192,7 @@ card_top = dbc.Card(
                                     children="",
                                     style={
                                         "text-align": "center",
-                                        "fontWeight": "bold",
+                                        # "fontWeight": "bold",
                                         "color": "#f9a200",
                                     },
                                 ),
@@ -213,7 +213,7 @@ card_top = dbc.Card(
                                     children="",
                                     style={
                                         "text-align": "center",
-                                        "fontWeight": "bold",
+                                        # "fontWeight": "bold",
                                         "color": "#537aaa",
                                     },
                                 ),
@@ -222,7 +222,7 @@ card_top = dbc.Card(
                                     children="",
                                     style={
                                         "text-align": "center",
-                                        "fontWeight": "bold",
+                                        # "fontWeight": "bold",
                                         "color": "#f9a200",
                                     },
                                 ),
@@ -236,6 +236,8 @@ card_top = dbc.Card(
     className="w-100 mb-3",
     style={
         "border": "1.5px solid #d3d3d3",
+        "margin-left": "15px",
+        "margin-right": "15px",
     },
 )
 
@@ -270,9 +272,7 @@ card_right = dbc.Card(
         ),
     ],
     className="w-100 mb-3",
-    style={
-        "border": "1.5px solid #d3d3d3",
-    },
+    style={"border": "1.5px solid #d3d3d3"},
 )
 
 jumbotron = dbc.Jumbotron(
@@ -289,15 +289,15 @@ jumbotron = dbc.Jumbotron(
                                     style={
                                         "text-align": "left",
                                         "font-size": "55px",
-                                        "color": "white",
-                                        "fontWeight": "bold",
+                                        "color": "black",
+                                        # "fontWeight": "bold",
                                     },
                                 ),
                                 dbc.Collapse(
                                     html.P(
                                         "This is an interactive dashboard based on the data from the Hotel Booking Demand dataset. Start using the dashboard by selecting specific year, month and hotel type",
                                         className="lead",
-                                        style={"width": "65%", "fontWeight": "bold"},
+                                        style={"width": "65%"},
                                     ),
                                     id="collapse",
                                 ),
@@ -313,7 +313,6 @@ jumbotron = dbc.Jumbotron(
     fluid=True,
     style={
         "padding": 50,
-        "background-color": "grey",
     },
 )
 
@@ -400,24 +399,6 @@ footer = dcc.Markdown(
 app.layout = html.Div([jumbotron, info_area, html.Hr(), footer])
 
 
-def get_stats(data, scope="all_time", ycol="Reservations"):
-    if scope == "all_time":
-        max_ind = data[data["Line"] == "Average"][ycol].argmax()
-        min_ind = data[data["Line"] == "Average"][ycol].argmin()
-    else:
-        max_ind = data[data["Line"] != "Average"][ycol].argmax()
-        min_ind = data[data["Line"] != "Average"][ycol].argmin()
-
-    stats = {
-        "ave": round(data[data["Line"] == "Average"][ycol].mean(), 1),
-        "max": data.iloc[max_ind, 2],
-        "max_date": data.iloc[max_ind, 0],
-        "min": data.iloc[min_ind, 2],
-        "min_date": data.iloc[min_ind, 0],
-    }
-    return stats
-
-
 click = alt.selection_multi(fields=["Line"], bind="legend")
 
 # Callbacks and back-end
@@ -425,6 +406,13 @@ click = alt.selection_multi(fields=["Line"], bind="legend")
 
 @app.callback(Output("month-dropdown", "options"), [Input("year-dropdown", "value")])
 def update_date_dropdown(year):
+    """removes the months from the month-dropdown for which no data is  available
+    ----------
+     year:        the year selected from "year-dropdown"
+    Returns
+    -------
+    updated month-dropdown options
+    """
     if year == 2015:
         return [{"label": months[i], "value": i + 1} for i in range(6, 12)]
     if year == 2017:
@@ -438,6 +426,13 @@ def update_date_dropdown(year):
     [State("collapse", "is_open")],
 )
 def toggle_collapse(n, is_open):
+    """toggle the collapse button to display app information
+    ------
+    n: check if there is input on the button
+    Returns
+    -------
+    expand the information area
+    """
     if n:
         return not is_open
     return is_open
@@ -449,6 +444,13 @@ def toggle_collapse(n, is_open):
     [State("instruction", "is_open")],
 )
 def toggle_collapse(n, is_open):
+    """toggle the collapse button to display app instructions
+    ------
+    n: check if there is input on the button
+    Returns
+    -------
+    expand the instruction area
+    """
     if n:
         return not is_open
     return is_open
@@ -499,7 +501,7 @@ def plot_year(hotel_type="All", y_col="Reservations", year=2016):
     )
     chart = (
         (lines + lines.mark_circle())
-        .properties(width=310, height=250)
+        .properties(width=295, height=250)
         .configure_axis(labelFontSize=13, titleFontSize=17, grid=False)
         .configure_title(fontSize=23)
         .configure_legend(
@@ -553,7 +555,7 @@ def plot_month(hotel_type="All", y_col="Reservations", year=2016, month=1):
     )
     chart = (
         (lines + lines.mark_circle())
-        .properties(width=310, height=250)
+        .properties(width=300, height=250)
         .configure_axis(labelFontSize=13, titleFontSize=17, grid=False)
         .configure_title(fontSize=23)
         .configure_legend(
